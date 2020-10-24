@@ -7,7 +7,12 @@ require("dotenv").config();
 var session = require("express-session");
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+var authRouter = require("./routes/auth/auth");
+
+// var usersRouter = require("./routes/users");
+// var loginRouter = require("./routes/login");
+// var signUpRouter = require("./routes/signUp");
+// var profileRouter = require("./routes/profile");
 
 var app = express();
 
@@ -21,9 +26,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use("/public", express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname + '/node_modules/bootstrap/dist'));
+app.use(express.static(__dirname + '/node_modules/firebase'));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/auth", authRouter);
+// app.use("/users", usersRouter);
+// app.use("/login", loginRouter);
+// app.use("/signUp", signUpRouter);
+// app.use("/profile", profileRouter);
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
