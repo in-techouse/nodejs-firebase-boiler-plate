@@ -6,6 +6,15 @@ a {
   color: #00B7FF;
 }
 
+#search-button{
+  border-color: white;
+  border-radius: 20px;
+}
+
+.navbar{
+  background-color: #007bff !important;
+}
+
 :root {
   --input-padding-x: 1.5rem;
   --input-padding-y: .75rem;

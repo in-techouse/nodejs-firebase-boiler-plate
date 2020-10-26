@@ -1,9 +1,13 @@
 var express = require("express");
 var firebase = require("firebase");
 var router = express.Router();
+const authorize = require("../../auth-middleware");
 
 router.get("/login", function (req, res, next) {
-  res.render("pages/auth/login", { title: "Express" });
+  res.render("pages/auth/login", {
+    title: "Express",
+    isLogedIn: req.session.isLogedIn,
+  });
 });
 
 router.post("/login", function (req, res, next) {
@@ -13,7 +17,8 @@ router.post("/login", function (req, res, next) {
     .auth()
     .signInWithEmailAndPassword(userEmail, userPassword)
     .then((result) => {
-      res.send(result);
+      req.session.isLogedIn = true;
+      res.redirect("/");
     })
     .catch((err) => {
       res.send(err);
@@ -21,7 +26,10 @@ router.post("/login", function (req, res, next) {
 });
 
 router.get("/signup", function (req, res, next) {
-  res.render("pages/auth/signUp", { title: "Express" });
+  res.render("pages/auth/signUp", {
+    title: "Express",
+    isLogedIn: req.session.isLogedIn,
+  });
 });
 
 router.post("/signup", function (req, res, next) {
@@ -31,25 +39,25 @@ router.post("/signup", function (req, res, next) {
     .auth()
     .createUserWithEmailAndPassword(userEmail, userPassword)
     .then((result) => {
-      res.send(result);
+      req.session.isLogedIn = true;
+      res.redirect("/");
     })
     .catch((err) => {
       res.send(err);
     });
 });
 
-router.get("/profile", function (req, res, next) {
-  res.render("pages/auth/profile", { title: "Express" });
-});
-
-router.get("/singout", function (req, res) {
-  firebase.auth().signOut();
-  req.session.destroy(function (err) {
-    if (err) {
-      res.negotiate(err);
-    }
-    res.redirect("/");
-  });
+router.get("/signout", authorize(), function (req, res, next) {
+  firebase
+    .auth()
+    .signOut()
+    .then(function () {
+      req.session.isLogedIn = false;
+      res.redirect("/");
+    })
+    .catch(function (error) {
+      // An error happened.
+    });
 });
 
 module.exports = router;
